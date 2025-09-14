@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:nutrition_calculator_app/core/presentation/theme/theme.dart';
 
-enum NutritionType { gel, bar, bottle }
+enum NutritionType { gel, caffeineGel, bar, bottle }
 enum GelCarbs { g30, g40, g45 }
 enum BarCarbs { g20, g25, g30 }
 
@@ -13,6 +13,7 @@ class NutritionItem {
   final double? bottleVolume;
   final double? bottleCarbs;
   final double? bottleSodium;
+  final double? caffeine;
 
   NutritionItem({
     required this.id,
@@ -22,11 +23,13 @@ class NutritionItem {
     this.bottleVolume,
     this.bottleCarbs,
     this.bottleSodium,
+    this.caffeine,
   });
 
   double get carbsAmount {
     switch (type) {
       case NutritionType.gel:
+      case NutritionType.caffeineGel:
         switch (gelCarbs) {
           case GelCarbs.g30: return 30.0;
           case GelCarbs.g40: return 40.0;
@@ -48,7 +51,8 @@ class NutritionItem {
   double get sodiumAmount {
     switch (type) {
       case NutritionType.gel:
-        return 50.0; // Standard Gel Natrium
+      case NutritionType.caffeineGel:
+        return 50.0; // Standard Gel Sodium
       case NutritionType.bar:
         return 30.0; // Standard Bar Sodium
       case NutritionType.bottle:
@@ -59,6 +63,7 @@ class NutritionItem {
   double get fluidAmount {
     switch (type) {
       case NutritionType.gel:
+      case NutritionType.caffeineGel:
         return 0.0; // Gel has no fluid
       case NutritionType.bar:
         return 0.0; // Bar has no fluid
@@ -66,6 +71,8 @@ class NutritionItem {
         return bottleVolume ?? 0.0;
     }
   }
+
+  double get caffeineAmount => caffeine ?? 0.0;
 }
 
 class SportNutrition {
@@ -91,6 +98,7 @@ class SportNutrition {
   double get totalCarbs => nutritionItems.fold(0.0, (sum, item) => sum + item.carbsAmount);
   double get totalSodium => nutritionItems.fold(0.0, (sum, item) => sum + item.sodiumAmount);
   double get totalFluid => nutritionItems.fold(0.0, (sum, item) => sum + item.fluidAmount);
+  double get totalCaffeine => nutritionItems.fold(0.0, (sum, item) => sum + item.caffeineAmount);
 
   double get duration {
     final text = durationController.text.trim();
@@ -196,6 +204,7 @@ class _TriathlonNutritionCalculatorState extends State<TriathlonNutritionCalcula
         SizedBox(height: 20),
         ...sports.map((sport) => _buildSportSection(sport)),
         _buildTotalSection(),
+        _buildRecommendationsSection(),
       ],
     );
   }
@@ -314,35 +323,72 @@ class _TriathlonNutritionCalculatorState extends State<TriathlonNutritionCalcula
           SizedBox(height: 15),
 
           // Add Nutrition Buttons
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+          Column(
             children: [
-              ElevatedButton.icon(
-                onPressed: () => _addNutritionItem(sport, NutritionType.gel),
-                icon: Icon(Icons.add, size: 16),
-                label: Text('Gel', style: TextStyle(fontSize: 12)),
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: Colors.yellow[700],
-                  foregroundColor: Colors.black,
-                ),
+              Row(
+                children: [
+                  Expanded(
+                    child: Padding(
+                      padding: EdgeInsets.only(right: 4),
+                      child: ElevatedButton.icon(
+                        onPressed: () => _addNutritionItem(sport, NutritionType.gel),
+                        icon: Icon(Icons.add, size: 16),
+                        label: Text('Gel', style: TextStyle(fontSize: 12)),
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: blackyellowTheme.colorScheme.primary,
+                          foregroundColor: Colors.black,
+                        ),
+                      ),
+                    ),
+                  ),
+                  Expanded(
+                    child: Padding(
+                      padding: EdgeInsets.only(left: 4),
+                      child: ElevatedButton.icon(
+                        onPressed: () => _addNutritionItem(sport, NutritionType.caffeineGel),
+                        icon: Icon(Icons.add, size: 16),
+                        label: Text('Caffeine Gel', style: TextStyle(fontSize: 12)),
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: blackyellowTheme.colorScheme.primary,
+                          foregroundColor: Colors.black,
+                        ),
+                      ),
+                    ),
+                  ),
+                ],
               ),
-              ElevatedButton.icon(
-                onPressed: () => _addNutritionItem(sport, NutritionType.bar),
-                icon: Icon(Icons.add, size: 16),
-                label: Text('Bar', style: TextStyle(fontSize: 12)),
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: Colors.brown,
-                  foregroundColor: Colors.white,
-                ),
-              ),
-              ElevatedButton.icon(
-                onPressed: () => _addNutritionItem(sport, NutritionType.bottle),
-                icon: Icon(Icons.add, size: 16),
-                label: Text('Bottle', style: TextStyle(fontSize: 12)),
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: Colors.blue,
-                  foregroundColor: Colors.white,
-                ),
+              SizedBox(height: 8),
+              Row(
+                children: [
+                  Expanded(
+                    child: Padding(
+                      padding: EdgeInsets.only(right: 4),
+                      child: ElevatedButton.icon(
+                        onPressed: () => _addNutritionItem(sport, NutritionType.bar),
+                        icon: Icon(Icons.add, size: 16),
+                        label: Text('Bar', style: TextStyle(fontSize: 12)),
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: blackyellowTheme.colorScheme.primary,
+                          foregroundColor: Colors.black,
+                        ),
+                      ),
+                    ),
+                  ),
+                  Expanded(
+                    child: Padding(
+                      padding: EdgeInsets.only(left: 4),
+                      child: ElevatedButton.icon(
+                        onPressed: () => _addNutritionItem(sport, NutritionType.bottle),
+                        icon: Icon(Icons.add, size: 16),
+                        label: Text('Bottle', style: TextStyle(fontSize: 12)),
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: blackyellowTheme.colorScheme.primary,
+                          foregroundColor: Colors.black,
+                        ),
+                      ),
+                    ),
+                  ),
+                ],
               ),
             ],
           ),
@@ -367,17 +413,22 @@ class _TriathlonNutritionCalculatorState extends State<TriathlonNutritionCalcula
 
     switch (item.type) {
       case NutritionType.gel:
-        color = Colors.yellow[700]!;
+        color = blackyellowTheme.colorScheme.primary;
         final carbValue = item.gelCarbs.toString().split('.').last.substring(1); // Remove 'g' prefix
-        description = 'Gel ${carbValue}g';
+        description = 'Regular Gel ${carbValue}g';
+        break;
+      case NutritionType.caffeineGel:
+        color = blackyellowTheme.colorScheme.primary;
+        final carbValue = item.gelCarbs.toString().split('.').last.substring(1); // Remove 'g' prefix
+        description = 'Caffeine Gel ${carbValue}g (${item.caffeineAmount.toInt()}mg caffeine)';
         break;
       case NutritionType.bar:
-        color = Colors.brown;
+        color = blackyellowTheme.colorScheme.secondary;
         final carbValue = item.barCarbs.toString().split('.').last.substring(1); // Remove 'g' prefix
         description = 'Bar ${carbValue}g';
         break;
       case NutritionType.bottle:
-        color = Colors.blue;
+        color = blackyellowTheme.colorScheme.secondary;
         description = 'Bottle ${item.bottleVolume}ml';
         break;
     }
@@ -397,15 +448,15 @@ class _TriathlonNutritionCalculatorState extends State<TriathlonNutritionCalcula
               children: [
                 Text(description, style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
                 Text(
-                  item.type == NutritionType.bottle 
+                  item.type == NutritionType.bottle
                     ? () {
                         // Calculate glucose and fructose based on 1:0.8 ratio
                         final totalCarbs = item.carbsAmount;
                         final glucose = totalCarbs / 1.8; // 1/(1+0.8) = 1/1.8
                         final fructose = glucose * 0.8;
-                        return 'KH: ${totalCarbs.toInt()}g (${glucose.toInt()}g Gl/${fructose.toInt()}g Fr), Na: ${item.sodiumAmount.toInt()}mg, Fl: ${item.fluidAmount.toInt()}ml';
+                        return 'Carbs: ${totalCarbs.toInt()}g (${glucose.toInt()}g Gl/${fructose.toInt()}g Fr), Na: ${item.sodiumAmount.toInt()}mg, Fl: ${item.fluidAmount.toInt()}ml';
                       }()
-                    : 'KH: ${item.carbsAmount.toInt()}g, Na: ${item.sodiumAmount.toInt()}mg, Fl: ${item.fluidAmount.toInt()}ml',
+                    : 'Carbs: ${item.carbsAmount.toInt()}g, Na: ${item.sodiumAmount.toInt()}mg, Fl: ${item.fluidAmount.toInt()}ml',
                   style: TextStyle(color: Colors.white70, fontSize: 12),
                 ),
               ],
@@ -413,7 +464,7 @@ class _TriathlonNutritionCalculatorState extends State<TriathlonNutritionCalcula
           ),
           IconButton(
             onPressed: () => _removeNutritionItem(sport, item),
-            icon: Icon(Icons.delete, color: Colors.red),
+            icon: Icon(Icons.delete, color: Colors.white),
             iconSize: 20,
           ),
         ],
@@ -541,6 +592,26 @@ class _TriathlonNutritionCalculatorState extends State<TriathlonNutritionCalcula
                   )),
                 ],
               ),
+              TableRow(
+                children: [
+                  TableCell(child: Padding(
+                    padding: EdgeInsets.all(8.0),
+                    child: Text('Caffeine', style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
+                  )),
+                  TableCell(child: Padding(
+                    padding: EdgeInsets.all(8.0),
+                    child: Text('-', style: TextStyle(color: Colors.white), textAlign: TextAlign.center),
+                  )),
+                  TableCell(child: Padding(
+                    padding: EdgeInsets.all(8.0),
+                    child: Text('${sport.totalCaffeine.toInt()}mg', style: TextStyle(color: Colors.white), textAlign: TextAlign.center),
+                  )),
+                  TableCell(child: Padding(
+                    padding: EdgeInsets.all(8.0),
+                    child: Text('-', style: TextStyle(color: Colors.white), textAlign: TextAlign.center),
+                  )),
+                ],
+              ),
             ],
           ),
         ],
@@ -552,11 +623,12 @@ class _TriathlonNutritionCalculatorState extends State<TriathlonNutritionCalcula
     final totalCarbs = sports.fold(0.0, (sum, sport) => sum + sport.totalCarbs);
     final totalSodium = sports.fold(0.0, (sum, sport) => sum + sport.totalSodium);
     final totalFluid = sports.fold(0.0, (sum, sport) => sum + sport.totalFluid);
-    
+    final totalCaffeine = sports.fold(0.0, (sum, sport) => sum + sport.totalCaffeine);
+
     final targetCarbs = sports.fold(0.0, (sum, sport) => sum + sport.carbTarget);
     final targetSodium = sports.fold(0.0, (sum, sport) => sum + sport.sodiumTarget);
     final targetFluid = sports.fold(0.0, (sum, sport) => sum + sport.fluidTarget);
-    
+
     final carbsDiff = totalCarbs - targetCarbs;
     final sodiumDiff = totalSodium - targetSodium;
     final fluidDiff = totalFluid - targetFluid;
@@ -570,7 +642,7 @@ class _TriathlonNutritionCalculatorState extends State<TriathlonNutritionCalcula
       child: Column(
         children: [
           Text(
-            'Total Triathlon Balance',
+            'Total Triathlon Summary',
             style: TextStyle(
               color: Colors.black,
               fontSize: 18,
@@ -684,8 +756,68 @@ class _TriathlonNutritionCalculatorState extends State<TriathlonNutritionCalcula
                   )),
                 ],
               ),
+              TableRow(
+                children: [
+                  TableCell(child: Padding(
+                    padding: EdgeInsets.all(8.0),
+                    child: Text('Caffeine', style: TextStyle(color: Colors.black, fontWeight: FontWeight.bold)),
+                  )),
+                  TableCell(child: Padding(
+                    padding: EdgeInsets.all(8.0),
+                    child: Text('-', style: TextStyle(color: Colors.black), textAlign: TextAlign.center),
+                  )),
+                  TableCell(child: Padding(
+                    padding: EdgeInsets.all(8.0),
+                    child: Text('${totalCaffeine.toInt()}mg', style: TextStyle(color: Colors.black), textAlign: TextAlign.center),
+                  )),
+                  TableCell(child: Padding(
+                    padding: EdgeInsets.all(8.0),
+                    child: Text('-', style: TextStyle(color: Colors.black), textAlign: TextAlign.center),
+                  )),
+                ],
+              ),
             ],
           ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildRecommendationsSection() {
+    return Container(
+      margin: EdgeInsets.only(top: 15),
+      padding: EdgeInsets.all(15),
+      decoration: BoxDecoration(
+        color: blackyellowTheme.colorScheme.secondary,
+        borderRadius: BorderRadius.all(Radius.circular(15)),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            'Recommendations:',
+            style: TextStyle(
+              color: Colors.white,
+              fontSize: 16,
+              fontWeight: FontWeight.bold,
+            ),
+          ),
+      
+          SizedBox(height: 5),
+          Text(
+            '300-700mg sodium per hour depending on sweat rate and conditions. Higher intake for hot weather and heavy sweaters.',
+            style: TextStyle(color: Colors.white70, fontSize: 12),
+          ),
+          SizedBox(height: 8),
+          Text(
+            'Maximum carbohydrate to fluid ratio 1:2 (Example: 250g carbs to 500ml water)',
+            style: TextStyle(color: Colors.white70, fontSize: 12),
+          ),
+          SizedBox(height: 8),
+          Text('• Use a mixer to blend maltodextrin and fructose', style: TextStyle(color: Colors.white70, fontSize: 12)),
+          Text('• Add lemon juice for flavor', style: TextStyle(color: Colors.white70, fontSize: 12)),
+          SizedBox(height: 5),
+          Text('• 1g salt = 390mg sodium', style: TextStyle(color: Colors.white70, fontSize: 12)),
         ],
       ),
     );
@@ -711,12 +843,14 @@ class _NutritionDialogState extends State<_NutritionDialog> {
   final TextEditingController volumeController = TextEditingController();
   final TextEditingController carbsController = TextEditingController();
   final TextEditingController sodiumController = TextEditingController();
+  final TextEditingController caffeineController = TextEditingController();
 
   @override
   void dispose() {
     volumeController.dispose();
     carbsController.dispose();
     sodiumController.dispose();
+    caffeineController.dispose();
     super.dispose();
   }
 
@@ -732,7 +866,7 @@ class _NutritionDialogState extends State<_NutritionDialog> {
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            if (widget.type == NutritionType.gel) ...[
+            if (widget.type == NutritionType.gel || widget.type == NutritionType.caffeineGel) ...[
               Text('Carbohydrate content:', style: TextStyle(color: Colors.white)),
               DropdownButton<GelCarbs>(
                 value: selectedGelCarbs,
@@ -753,6 +887,20 @@ class _NutritionDialogState extends State<_NutritionDialog> {
                   }
                 },
               ),
+              if (widget.type == NutritionType.caffeineGel) ...[
+                SizedBox(height: 10),
+                TextFormField(
+                  controller: caffeineController,
+                  style: TextStyle(color: Colors.black),
+                  decoration: InputDecoration(
+                    labelText: 'Caffeine (mg)',
+                    labelStyle: TextStyle(color: Colors.black54),
+                    filled: true,
+                    fillColor: Colors.white,
+                  ),
+                  keyboardType: TextInputType.number,
+                ),
+              ],
             ] else if (widget.type == NutritionType.bar) ...[
               Text('Carbohydrate content:', style: TextStyle(color: Colors.white)),
               DropdownButton<BarCarbs>(
@@ -824,14 +972,16 @@ class _NutritionDialogState extends State<_NutritionDialog> {
             final item = NutritionItem(
               id: DateTime.now().millisecondsSinceEpoch.toString(),
               type: widget.type,
-              gelCarbs: widget.type == NutritionType.gel ? selectedGelCarbs : null,
+              gelCarbs: (widget.type == NutritionType.gel || widget.type == NutritionType.caffeineGel) ? selectedGelCarbs : null,
               barCarbs: widget.type == NutritionType.bar ? selectedBarCarbs : null,
-              bottleVolume: widget.type == NutritionType.bottle 
+              bottleVolume: widget.type == NutritionType.bottle
                   ? double.tryParse(volumeController.text) : null,
-              bottleCarbs: widget.type == NutritionType.bottle 
+              bottleCarbs: widget.type == NutritionType.bottle
                   ? double.tryParse(carbsController.text) : null,
-              bottleSodium: widget.type == NutritionType.bottle 
+              bottleSodium: widget.type == NutritionType.bottle
                   ? double.tryParse(sodiumController.text) : null,
+              caffeine: widget.type == NutritionType.caffeineGel
+                  ? double.tryParse(caffeineController.text) : null,
             );
             
             widget.onAdd(item);
@@ -840,7 +990,7 @@ class _NutritionDialogState extends State<_NutritionDialog> {
           style: ElevatedButton.styleFrom(
             backgroundColor: blackyellowTheme.colorScheme.primary,
           ),
-          child: Text('Hinzufügen', style: TextStyle(color: Colors.black)),
+          child: Text('Add', style: TextStyle(color: Colors.black)),
         ),
       ],
     );
