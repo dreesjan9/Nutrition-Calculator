@@ -1,15 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:nutrition_calculator_app/core/presentation/theme/theme.dart';
 
-enum NutritionType { gel, riegel, flasche }
+enum NutritionType { gel, bar, bottle }
 enum GelCarbs { g30, g40, g45 }
-enum RiegelCarbs { g20, g25, g30 }
+enum BarCarbs { g20, g25, g30 }
 
 class NutritionItem {
   final String id;
   final NutritionType type;
   final GelCarbs? gelCarbs;
-  final RiegelCarbs? riegelCarbs;
+  final BarCarbs? barCarbs;
   final double? bottleVolume;
   final double? bottleCarbs;
   final double? bottleSodium;
@@ -18,7 +18,7 @@ class NutritionItem {
     required this.id,
     required this.type,
     this.gelCarbs,
-    this.riegelCarbs,
+    this.barCarbs,
     this.bottleVolume,
     this.bottleCarbs,
     this.bottleSodium,
@@ -33,14 +33,14 @@ class NutritionItem {
           case GelCarbs.g45: return 45.0;
           default: return 0.0;
         }
-      case NutritionType.riegel:
-        switch (riegelCarbs) {
-          case RiegelCarbs.g20: return 20.0;
-          case RiegelCarbs.g25: return 25.0;
-          case RiegelCarbs.g30: return 30.0;
+      case NutritionType.bar:
+        switch (barCarbs) {
+          case BarCarbs.g20: return 20.0;
+          case BarCarbs.g25: return 25.0;
+          case BarCarbs.g30: return 30.0;
           default: return 0.0;
         }
-      case NutritionType.flasche:
+      case NutritionType.bottle:
         return bottleCarbs ?? 0.0;
     }
   }
@@ -49,9 +49,9 @@ class NutritionItem {
     switch (type) {
       case NutritionType.gel:
         return 50.0; // Standard Gel Natrium
-      case NutritionType.riegel:
-        return 30.0; // Standard Riegel Natrium
-      case NutritionType.flasche:
+      case NutritionType.bar:
+        return 30.0; // Standard Bar Sodium
+      case NutritionType.bottle:
         return bottleSodium ?? 0.0;
     }
   }
@@ -60,9 +60,9 @@ class NutritionItem {
     switch (type) {
       case NutritionType.gel:
         return 0.0; // Gel has no fluid
-      case NutritionType.riegel:
+      case NutritionType.bar:
         return 0.0; // Bar has no fluid
-      case NutritionType.flasche:
+      case NutritionType.bottle:
         return bottleVolume ?? 0.0;
     }
   }
@@ -132,17 +132,17 @@ class _TriathlonNutritionCalculatorState extends State<TriathlonNutritionCalcula
     super.initState();
     sports = [
       SportNutrition(
-        sportName: 'Schwimmen',
+        sportName: 'Swimming',
         icon: Icons.pool,
         color: blackyellowTheme.colorScheme.primary,
       ),
       SportNutrition(
-        sportName: 'Radfahren',
+        sportName: 'Cycling',
         icon: Icons.directions_bike,
         color: blackyellowTheme.colorScheme.primary,
       ),
       SportNutrition(
-        sportName: 'Laufen',
+        sportName: 'Running',
         icon: Icons.directions_run,
         color: blackyellowTheme.colorScheme.primary,
       ),
@@ -327,7 +327,7 @@ class _TriathlonNutritionCalculatorState extends State<TriathlonNutritionCalcula
                 ),
               ),
               ElevatedButton.icon(
-                onPressed: () => _addNutritionItem(sport, NutritionType.riegel),
+                onPressed: () => _addNutritionItem(sport, NutritionType.bar),
                 icon: Icon(Icons.add, size: 16),
                 label: Text('Bar', style: TextStyle(fontSize: 12)),
                 style: ElevatedButton.styleFrom(
@@ -336,7 +336,7 @@ class _TriathlonNutritionCalculatorState extends State<TriathlonNutritionCalcula
                 ),
               ),
               ElevatedButton.icon(
-                onPressed: () => _addNutritionItem(sport, NutritionType.flasche),
+                onPressed: () => _addNutritionItem(sport, NutritionType.bottle),
                 icon: Icon(Icons.add, size: 16),
                 label: Text('Bottle', style: TextStyle(fontSize: 12)),
                 style: ElevatedButton.styleFrom(
@@ -371,12 +371,12 @@ class _TriathlonNutritionCalculatorState extends State<TriathlonNutritionCalcula
         final carbValue = item.gelCarbs.toString().split('.').last.substring(1); // Remove 'g' prefix
         description = 'Gel ${carbValue}g';
         break;
-      case NutritionType.riegel:
+      case NutritionType.bar:
         color = Colors.brown;
-        final carbValue = item.riegelCarbs.toString().split('.').last.substring(1); // Remove 'g' prefix
+        final carbValue = item.barCarbs.toString().split('.').last.substring(1); // Remove 'g' prefix
         description = 'Bar ${carbValue}g';
         break;
-      case NutritionType.flasche:
+      case NutritionType.bottle:
         color = Colors.blue;
         description = 'Bottle ${item.bottleVolume}ml';
         break;
@@ -397,7 +397,7 @@ class _TriathlonNutritionCalculatorState extends State<TriathlonNutritionCalcula
               children: [
                 Text(description, style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
                 Text(
-                  item.type == NutritionType.flasche 
+                  item.type == NutritionType.bottle 
                     ? () {
                         // Calculate glucose and fructose based on 1:0.8 ratio
                         final totalCarbs = item.carbsAmount;
@@ -707,7 +707,7 @@ class _NutritionDialog extends StatefulWidget {
 
 class _NutritionDialogState extends State<_NutritionDialog> {
   GelCarbs selectedGelCarbs = GelCarbs.g30;
-  RiegelCarbs selectedRiegelCarbs = RiegelCarbs.g25;
+  BarCarbs selectedBarCarbs = BarCarbs.g25;
   final TextEditingController volumeController = TextEditingController();
   final TextEditingController carbsController = TextEditingController();
   final TextEditingController sodiumController = TextEditingController();
@@ -753,13 +753,13 @@ class _NutritionDialogState extends State<_NutritionDialog> {
                   }
                 },
               ),
-            ] else if (widget.type == NutritionType.riegel) ...[
+            ] else if (widget.type == NutritionType.bar) ...[
               Text('Carbohydrate content:', style: TextStyle(color: Colors.white)),
-              DropdownButton<RiegelCarbs>(
-                value: selectedRiegelCarbs,
+              DropdownButton<BarCarbs>(
+                value: selectedBarCarbs,
                 dropdownColor: blackyellowTheme.colorScheme.secondary,
                 style: TextStyle(color: Colors.white),
-                items: RiegelCarbs.values.map((carbs) {
+                items: BarCarbs.values.map((carbs) {
                   final value = carbs.toString().split('.').last.substring(1); // Remove 'g' prefix
                   return DropdownMenuItem(
                     value: carbs,
@@ -769,12 +769,12 @@ class _NutritionDialogState extends State<_NutritionDialog> {
                 onChanged: (value) {
                   if (value != null) {
                     setState(() {
-                      selectedRiegelCarbs = value;
+                      selectedBarCarbs = value;
                     });
                   }
                 },
               ),
-            ] else if (widget.type == NutritionType.flasche) ...[
+            ] else if (widget.type == NutritionType.bottle) ...[
               TextFormField(
                 controller: volumeController,
                 style: TextStyle(color: Colors.black),
@@ -825,12 +825,12 @@ class _NutritionDialogState extends State<_NutritionDialog> {
               id: DateTime.now().millisecondsSinceEpoch.toString(),
               type: widget.type,
               gelCarbs: widget.type == NutritionType.gel ? selectedGelCarbs : null,
-              riegelCarbs: widget.type == NutritionType.riegel ? selectedRiegelCarbs : null,
-              bottleVolume: widget.type == NutritionType.flasche 
+              barCarbs: widget.type == NutritionType.bar ? selectedBarCarbs : null,
+              bottleVolume: widget.type == NutritionType.bottle 
                   ? double.tryParse(volumeController.text) : null,
-              bottleCarbs: widget.type == NutritionType.flasche 
+              bottleCarbs: widget.type == NutritionType.bottle 
                   ? double.tryParse(carbsController.text) : null,
-              bottleSodium: widget.type == NutritionType.flasche 
+              bottleSodium: widget.type == NutritionType.bottle 
                   ? double.tryParse(sodiumController.text) : null,
             );
             

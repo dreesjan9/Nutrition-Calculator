@@ -104,7 +104,7 @@ class _NutritionCalculatorState extends State<NutritionCalculator> {
                         // Glucose-Fructose Ratio Dropdown
                         Row(
                           children: [
-                            Text('Verhältnis: ', style: TextStyle(color: Colors.white, fontSize: 14)),
+                            Text('Ratio: ', style: TextStyle(color: Colors.white, fontSize: 14)),
                             SizedBox(width: 10),
                             Container(
                               padding: EdgeInsets.symmetric(horizontal: 8, vertical: 4),
