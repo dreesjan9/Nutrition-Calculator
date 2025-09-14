@@ -65,6 +65,111 @@ class _NutritionCalculatorState extends State<NutritionCalculator> {
     }
   }
 
+  void _showRatioInfoDialog() {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          backgroundColor: blackyellowTheme.colorScheme.secondary,
+          title: Text(
+            'Carbohydrate Ratio Table (${selectedRatio.displayName})',
+            style: TextStyle(color: Colors.white, fontSize: 16),
+          ),
+          content: SizedBox(
+            width: double.maxFinite,
+            height: 400,
+            child: SingleChildScrollView(
+              child: DataTable(
+                headingRowColor: WidgetStateProperty.all(blackyellowTheme.colorScheme.primary),
+                dataRowColor: WidgetStateProperty.all(Colors.white.withValues(alpha: 0.1)),
+                columns: [
+                  DataColumn(
+                    label: Text(
+                      'Carbs\n(g/h)',
+                      style: TextStyle(color: Colors.black, fontWeight: FontWeight.bold, fontSize: 12),
+                      textAlign: TextAlign.center,
+                    ),
+                  ),
+                  DataColumn(
+                    label: Text(
+                      'Glucose\n(g/h)',
+                      style: TextStyle(color: Colors.black, fontWeight: FontWeight.bold, fontSize: 12),
+                      textAlign: TextAlign.center,
+                    ),
+                  ),
+                  DataColumn(
+                    label: Text(
+                      'Fructose\n(g/h)',
+                      style: TextStyle(color: Colors.black, fontWeight: FontWeight.bold, fontSize: 12),
+                      textAlign: TextAlign.center,
+                    ),
+                  ),
+                ],
+                rows: _generateRatioTableRows(),
+              ),
+            ),
+          ),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.of(context).pop(),
+              child: Text('Close', style: TextStyle(color: Colors.white)),
+            ),
+          ],
+        );
+      },
+    );
+  }
+
+  List<DataRow> _generateRatioTableRows() {
+    List<DataRow> rows = [];
+
+    for (int carbsPerHour = 10; carbsPerHour <= 120; carbsPerHour += 10) {
+      double glucose, fructose;
+
+      switch (selectedRatio) {
+        case GlucoseFructoseRatio.ratio1to08:
+          // 1:0.8 ratio
+          glucose = carbsPerHour / 1.8; // 1/(1+0.8) = 1/1.8
+          fructose = glucose * 0.8;
+          break;
+        case GlucoseFructoseRatio.ratio2to1:
+          // 2:1 ratio
+          glucose = (carbsPerHour * 2) / 3;
+          fructose = carbsPerHour / 3;
+          break;
+      }
+
+      rows.add(
+        DataRow(
+          cells: [
+            DataCell(
+              Text(
+carbsPerHour.toString(),
+                style: TextStyle(color: Colors.white, fontSize: 11),
+                textAlign: TextAlign.center,
+              ),
+            ),
+            DataCell(
+              Text(
+glucose.toStringAsFixed(1),
+                style: TextStyle(color: Colors.white, fontSize: 11),
+                textAlign: TextAlign.center,
+              ),
+            ),
+            DataCell(
+              Text(
+fructose.toStringAsFixed(1),
+                style: TextStyle(color: Colors.white, fontSize: 11),
+                textAlign: TextAlign.center,
+              ),
+            ),
+          ],
+        ),
+      );
+    }
+
+    return rows;
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -131,6 +236,15 @@ class _NutritionCalculatorState extends State<NutritionCalculator> {
                                     calculateCarbAmount(); // Recalculate when ratio changes
                                   }
                                 },
+                              ),
+                            ),
+                            SizedBox(width: 8),
+                            GestureDetector(
+                              onTap: () => _showRatioInfoDialog(),
+                              child: Icon(
+                                Icons.info_outline,
+                                color: Colors.white,
+                                size: 20,
                               ),
                             ),
                           ],
