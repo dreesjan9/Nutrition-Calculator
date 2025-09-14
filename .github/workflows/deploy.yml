@@ -16,7 +16,7 @@ jobs:
         flutter-version: '3.24.0'
 
     - run: flutter pub get
-    - run: flutter build web --base-href /nutrition-calculator-app/
+    - run: flutter build web --base-href /Nutrition-Calculator/
 
     - name: Deploy to GitHub Pages
       uses: peaceiris/actions-gh-pages@v3
