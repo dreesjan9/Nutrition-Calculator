@@ -134,6 +134,8 @@ class TriathlonNutritionCalculator extends StatefulWidget {
 
 class _TriathlonNutritionCalculatorState extends State<TriathlonNutritionCalculator> {
   late List<SportNutrition> sports;
+  final TextEditingController sipVolumeController = TextEditingController(text: '22');
+  final TextEditingController drinkingIntervalController = TextEditingController(text: '10');
 
   @override
   void initState() {
@@ -165,8 +167,13 @@ class _TriathlonNutritionCalculatorState extends State<TriathlonNutritionCalcula
       sport.sodiumTargetController.dispose();
       sport.fluidTargetController.dispose();
     }
+    sipVolumeController.dispose();
+    drinkingIntervalController.dispose();
     super.dispose();
   }
+
+  double get sipVolume => double.tryParse(sipVolumeController.text) ?? 22.0;
+  double get drinkingInterval => double.tryParse(drinkingIntervalController.text) ?? 10.0;
 
   void _addNutritionItem(SportNutrition sport, NutritionType type) {
     showDialog(
@@ -201,7 +208,73 @@ class _TriathlonNutritionCalculatorState extends State<TriathlonNutritionCalcula
           ),
           textAlign: TextAlign.center,
         ),
-        SizedBox(height: 20),
+        SizedBox(height: 15),
+        // Drinking Settings Input
+        Container(
+          padding: EdgeInsets.all(15),
+          margin: EdgeInsets.only(bottom: 15),
+          decoration: BoxDecoration(
+            color: blackyellowTheme.colorScheme.secondary,
+            borderRadius: BorderRadius.all(Radius.circular(15)),
+          ),
+          child: Column(
+            children: [
+              Row(
+                children: [
+                  Text(
+                    'Drinking interval:',
+                    style: TextStyle(color: Colors.white, fontSize: 14, fontWeight: FontWeight.bold),
+                  ),
+                  SizedBox(width: 15),
+                  Expanded(
+                    child: TextFormField(
+                      controller: drinkingIntervalController,
+                      style: TextStyle(color: Colors.black),
+                      decoration: InputDecoration(
+                        suffixText: 'min',
+                        filled: true,
+                        fillColor: Colors.white,
+                        contentPadding: EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                        border: OutlineInputBorder(
+                          borderRadius: BorderRadius.all(Radius.circular(8)),
+                        ),
+                      ),
+                      keyboardType: TextInputType.number,
+                      onChanged: (_) => setState(() {}),
+                    ),
+                  ),
+                ],
+              ),
+              SizedBox(height: 10),
+              Row(
+                children: [
+                  Text(
+                    'Default sip volume:',
+                    style: TextStyle(color: Colors.white, fontSize: 14, fontWeight: FontWeight.bold),
+                  ),
+                  SizedBox(width: 15),
+                  Expanded(
+                    child: TextFormField(
+                      controller: sipVolumeController,
+                      style: TextStyle(color: Colors.black),
+                      decoration: InputDecoration(
+                        suffixText: 'ml/sip',
+                        filled: true,
+                        fillColor: Colors.white,
+                        contentPadding: EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                        border: OutlineInputBorder(
+                          borderRadius: BorderRadius.all(Radius.circular(8)),
+                        ),
+                      ),
+                      keyboardType: TextInputType.number,
+                      onChanged: (_) => setState(() {}),
+                    ),
+                  ),
+                ],
+              ),
+            ],
+          ),
+        ),
         ...sports.map((sport) => _buildSportSection(sport)),
         _buildTotalSection(),
         _buildRecommendationsSection(),
@@ -454,7 +527,20 @@ class _TriathlonNutritionCalculatorState extends State<TriathlonNutritionCalcula
                         final totalCarbs = item.carbsAmount;
                         final glucose = totalCarbs / 1.8; // 1/(1+0.8) = 1/1.8
                         final fructose = glucose * 0.8;
-                        return 'Carbs: ${totalCarbs.toInt()}g (${glucose.toInt()}g Gl/${fructose.toInt()}g Fr), Na: ${item.sodiumAmount.toInt()}mg, Fl: ${item.fluidAmount.toInt()}ml';
+
+                        // Calculate required number of sips based on drinking interval
+                        String sipInfo = '';
+                        final carbTargetPerHour = double.tryParse(sport.carbTargetController.text) ?? 0.0;
+                        if (carbTargetPerHour > 0 && item.bottleVolume != null && item.bottleCarbs != null && item.bottleVolume! > 0 && item.bottleCarbs! > 0) {
+                          final carbsPerMl = item.bottleCarbs! / item.bottleVolume!; // g carbs per ml
+                          final carbsPerSip = carbsPerMl * sipVolume; // carbs per default sip
+                          final requiredCarbsPerInterval = carbTargetPerHour * (drinkingInterval / 60); // carbs needed per interval
+                          final requiredSipsPerInterval = requiredCarbsPerInterval / carbsPerSip; // sips needed per interval
+                          final actualCarbsPerInterval = requiredSipsPerInterval * carbsPerSip; // actual carbs delivered per interval
+                          sipInfo = ', ${requiredSipsPerInterval.toInt()} sips every ${drinkingInterval.toInt()}min (${actualCarbsPerInterval.toInt()}g carbs)';
+                        }
+
+                        return 'Carbs: ${totalCarbs.toInt()}g (${glucose.toInt()}g Gl/${fructose.toInt()}g Fr), Na: ${item.sodiumAmount.toInt()}mg, Fl: ${item.fluidAmount.toInt()}ml$sipInfo';
                       }()
                     : 'Carbs: ${item.carbsAmount.toInt()}g, Na: ${item.sodiumAmount.toInt()}mg, Fl: ${item.fluidAmount.toInt()}ml',
                   style: TextStyle(color: Colors.white70, fontSize: 12),
@@ -806,6 +892,20 @@ class _TriathlonNutritionCalculatorState extends State<TriathlonNutritionCalcula
           SizedBox(height: 5),
           Text(
             '300-700mg sodium per hour depending on sweat rate and conditions. Higher intake for hot weather and heavy sweaters.',
+            style: TextStyle(color: Colors.white70, fontSize: 12),
+          ),
+          SizedBox(height: 10),
+          Text(
+            'Fluid intake recommendations:',
+            style: TextStyle(
+              color: Colors.white,
+              fontSize: 14,
+              fontWeight: FontWeight.bold,
+            ),
+          ),
+          SizedBox(height: 5),
+          Text(
+            '500-1000ml per hour depending on sweat rate, weather conditions, and exercise intensity. Start drinking early and maintain regular intake.',
             style: TextStyle(color: Colors.white70, fontSize: 12),
           ),
           SizedBox(height: 8),
