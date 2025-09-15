@@ -78359,7 +78359,7 @@ s.toString
 A.TT(new A.aiQ(this,b,a),s,t.z)},
 a6W(a,b){this.aj(new A.aje(a,b))},
 O(a2){var s,r,q,p,o,n,m,l,k,j,i,h,g,f,e,d,c=this,b=null,a=$.em(),a0=a.dx,a1=t.p
-a0=A.fJ(A.b([A.dZ(B.n0,a0,b,24),A.az(b,b,8),A.dZ(B.mY,a0,b,24),A.az(b,b,8),A.dZ(B.mZ,a0,b,24),A.az(b,b,16),A.W("Triathlon Nutrition Calculator",b,b,b,b,A.I(b,b,B.e,b,b,b,b,b,b,b,b,20,b,b,B.p,b,b,!0,b,0.5,b,b,b,b,b,b),b,b)],a1),B.X,B.jG,B.a1,b)
+a0=A.fJ(A.b([A.dZ(B.n0,a0,b,24),A.az(b,b,8),A.dZ(B.mY,a0,b,24),A.az(b,b,8),A.dZ(B.mZ,a0,b,24),A.az(b,b,16),A.W("Tri Nutrition Calculator",b,b,b,b,A.I(b,b,B.e,b,b,b,b,b,b,b,b,20,b,b,B.p,b,b,!0,b,0.5,b,b,b,b,b,b),b,b)],a1),B.X,B.jG,B.a1,b)
 s=A.az(b,24,b)
 a=a.ax
 r=a.y
@@ -78383,7 +78383,7 @@ h=A.I(b,b,B.h,b,b,b,b,b,b,b,b,b,b,b,b,b,b,!0,b,b,b,b,b,b,b,b)
 g=A.hb(b,new A.dI(4,A.dW(new A.ak(6,6)),B.bz),b,new A.Q(12,8,12,8),b,b,b,b,!0,b,b,b,b,b,b,B.e,!0,b,b,b,b,b,b,b,b,b,b,b,b,b,b,b,b,b,b,b,b,b,b,b,b,!0,!0,b,b,b,b,b,b,b,b,b,b,b,b,b)
 f=t.C2
 f=A.a0(new A.a1(B.G1,new A.ajs(c),f),f.h("aq.E"))
-o=A.fJ(A.b([o,j,A.az(A.aqf(g,f,new A.ajt(c),h,i,t.dO),b,200),A.az(b,b,8),A.iM(b,A.dZ(B.fC,a,b,20),B.ae,!1,b,b,b,b,b,b,b,b,b,b,b,b,c.ga8q(),b,b,b)],a1),B.X,B.I,B.a1,b)
+o=A.fJ(A.b([o,j,A.az(A.aqf(g,f,new A.ajt(c),h,i,t.dO),b,170),A.az(b,b,8),A.iM(b,A.dZ(B.fC,a,b,20),B.ae,!1,b,b,b,b,b,b,b,b,b,b,b,b,c.ga8q(),b,b,b)],a1),B.X,B.I,B.a1,b)
 j=A.az(b,12,b)
 i=A.az(A.W("Default fluid rate:",b,b,b,b,A.I(b,b,B.e,b,b,b,b,b,b,b,b,16,b,b,B.bq,b,b,!0,b,0.3,b,b,b,b,b,b),b,b),b,140)
 h=A.az(b,b,12)
@@ -78392,7 +78392,7 @@ f=A.I(b,b,B.h,b,b,b,b,b,b,b,b,b,b,b,b,b,b,!0,b,b,b,b,b,b,b,b)
 e=A.hb(b,new A.dI(4,A.dW(new A.ak(6,6)),B.bz),b,new A.Q(12,8,12,8),b,b,b,b,!0,b,b,b,b,b,b,B.e,!0,b,b,b,b,b,b,b,b,b,b,b,b,b,b,b,b,b,b,b,b,b,b,b,b,!0,!0,b,b,b,b,b,b,b,b,b,b,b,b,b)
 d=t.Km
 d=A.a0(new A.a1(B.Gf,new A.aju(c),d),d.h("aq.E"))
-q=A.d5(b,A.dp(A.b([m,n,k,l,o,j,A.fJ(A.b([i,h,A.az(A.aqf(e,d,new A.ajv(c),f,g,t.rP),b,200),A.az(b,b,8),A.iM(b,A.dZ(B.fC,a,b,20),B.ae,!1,b,b,b,b,b,b,b,b,b,b,b,b,c.ga8k(),b,b,b)],a1),B.X,B.I,B.a1,b)],a1),B.X,B.I,B.a1),B.t,b,new A.bX(r,b,b,q,p,b,B.W),b,new A.Q(0,0,0,20),new A.Q(20,20,20,20),b)
+q=A.d5(b,A.dp(A.b([m,n,k,l,o,j,A.fJ(A.b([i,h,A.az(A.aqf(e,d,new A.ajv(c),f,g,t.rP),b,170),A.az(b,b,8),A.iM(b,A.dZ(B.fC,a,b,20),B.ae,!1,b,b,b,b,b,b,b,b,b,b,b,b,c.ga8k(),b,b,b)],a1),B.X,B.I,B.a1,b)],a1),B.X,B.I,B.a1),B.t,b,new A.bX(r,b,b,q,p,b,B.W),b,new A.Q(0,0,0,20),new A.Q(20,20,20,20),b)
 p=c.d
 p===$&&A.a()
 p=c.zm(p[0])

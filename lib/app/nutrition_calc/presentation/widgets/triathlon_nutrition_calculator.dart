@@ -328,7 +328,7 @@ class _TriathlonNutritionCalculatorState extends State<TriathlonNutritionCalcula
             Icon(Icons.directions_run, color: blackyellowTheme.primaryColor, size: 24),
             SizedBox(width: spacingM),
             Text(
-              'Triathlon Nutrition Calculator',
+              'Tri Nutrition Calculator',
               style: headingStyle,
             ),
           ],
@@ -433,7 +433,7 @@ class _TriathlonNutritionCalculatorState extends State<TriathlonNutritionCalcula
                   ),
                   SizedBox(width: spacingS),
                   SizedBox(
-                    width: 200,
+                    width: 170,
                     child: DropdownButtonFormField<SweatRate>(
                       value: defaultSweatRate,
                       style: TextStyle(color: Colors.black),
@@ -484,7 +484,7 @@ class _TriathlonNutritionCalculatorState extends State<TriathlonNutritionCalcula
                   ),
                   SizedBox(width: spacingS),
                   SizedBox(
-                    width: 200,
+                    width: 170,
                     child: DropdownButtonFormField<FluidRate>(
                       value: defaultFluidRate,
                       style: TextStyle(color: Colors.black),
