@@ -1,13 +1,20 @@
 {
-    "name": "nutrition_calculator_app",
-    "short_name": "nutrition_calculator_app",
+    "name": "Triathlon Nutrition Calculator",
+    "short_name": "Tri Nutrition",
     "start_url": ".",
     "display": "standalone",
     "background_color": "#000000",
     "theme_color": "#000000",
-    "description": "A new Flutter project.",
+    "description": "Calculate your personalized triathlon nutrition plan with carbohydrate, sodium, and fluid recommendations for optimal race performance.",
     "orientation": "portrait-primary",
     "prefer_related_applications": false,
+    "categories": [
+        "sports",
+        "health",
+        "fitness",
+        "lifestyle"
+    ],
+    "lang": "en",
     "icons": [
         {
             "src": "icons/Icon-192.png",

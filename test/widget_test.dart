@@ -14,8 +14,8 @@ void main() {
     // Build our app and trigger a frame.
     await tester.pumpWidget(const NutritionCalculatorApp());
 
-    // Verify that the nutrition calculator loads
-    expect(find.text('Glucose-Fructose Ratio Calculator'), findsOneWidget);
-    expect(find.text('Enter the amount of carbs in g'), findsOneWidget);
+    // Verify that the start screen loads
+    expect(find.text('New configuration'), findsOneWidget);
+    expect(find.text('My plans'), findsOneWidget);
   });
 }

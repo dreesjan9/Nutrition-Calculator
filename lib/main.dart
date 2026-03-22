@@ -3,6 +3,7 @@ import 'package:nutrition_calculator_app/app/nutrition_calc/presentation/pages/n
 import 'package:nutrition_calculator_app/core/presentation/theme/theme.dart';
 
 void main() {
+  WidgetsFlutterBinding.ensureInitialized();
   runApp(const NutritionCalculatorApp());
 }
 
@@ -12,7 +13,7 @@ class NutritionCalculatorApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'Nutrition Calculator',
+      title: 'Ratio - Advanced Sports Nutrition Planning',
       theme: blackyellowTheme,
       home: const NutritionCalculator(),
       debugShowCheckedModeBanner: false,

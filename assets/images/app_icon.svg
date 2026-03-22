@@ -1,0 +1,33 @@
+<svg width="512" height="512" viewBox="0 0 512 512" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <!-- Modern Geometric Background -->
+  <rect width="512" height="512" rx="100" fill="#121212"/>
+  
+  <!-- Subtle Gradient Accent -->
+  <defs>
+    <linearGradient id="paint0_linear" x1="0" y1="0" x2="512" y2="512" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#FFD700" stop-opacity="0.15"/>
+      <stop offset="1" stop-color="#FFD700" stop-opacity="0"/>
+    </linearGradient>
+    <linearGradient id="paint1_linear" x1="512" y1="512" x2="0" y2="0" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#FFD700" stop-opacity="0.1"/>
+      <stop offset="1" stop-color="#FFD700" stop-opacity="0"/>
+    </linearGradient>
+  </defs>
+
+  <!-- Decorative geometric elements -->
+  <circle cx="450" cy="60" r="120" fill="url(#paint0_linear)" />
+  <circle cx="60" cy="450" r="150" fill="url(#paint1_linear)" />
+  
+  <!-- Ratio Lines (Visualizing 1:0.8) -->
+  <rect x="80" y="420" width="352" height="4" rx="2" fill="#FFD700" fill-opacity="0.3"/>
+  <rect x="80" y="420" width="200" height="4" rx="2" fill="#FFD700"/>
+  
+  <!-- "RATIO" Text -->
+  <text x="50%" y="52%" dominant-baseline="middle" text-anchor="middle" 
+        style="font-family: Arial, sans-serif; font-weight: 900; font-size: 110px; letter-spacing: 8px;" 
+        fill="#FFD700">RATIO</text>
+  
+  <!-- Minimalist Divider -->
+  <path d="M180 320 L332 320" stroke="#FFD700" stroke-width="6" stroke-linecap="round" opacity="0.8"/>
+  
+</svg>

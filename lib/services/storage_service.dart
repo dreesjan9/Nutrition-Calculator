@@ -4,6 +4,8 @@ import 'package:shared_preferences/shared_preferences.dart';
 class StorageService {
   static const String _nutritionDataKey = 'nutrition_data';
   static const String _sportSettingsKey = 'sport_settings';
+  static const String _savedConfigurationsKey = 'saved_configurations';
+  static const String _lastConfigurationKey = 'last_configuration';
 
   // Save nutrition data to local storage
   static Future<void> saveNutritionData(Map<String, dynamic> data) async {
@@ -55,12 +57,96 @@ class StorageService {
     return null;
   }
 
+  static Future<List<Map<String, dynamic>>> loadSavedConfigurations() async {
+    try {
+      final prefs = await SharedPreferences.getInstance();
+      final jsonString = prefs.getString(_savedConfigurationsKey);
+      if (jsonString == null) {
+        return [];
+      }
+
+      final decoded = jsonDecode(jsonString);
+      if (decoded is! List) {
+        return [];
+      }
+
+      return decoded
+          .whereType<Map>()
+          .map(
+            (item) => item.map((key, value) => MapEntry(key.toString(), value)),
+          )
+          .toList();
+    } catch (e) {
+      return [];
+    }
+  }
+
+  static Future<void> saveConfiguration(
+    Map<String, dynamic> configuration,
+  ) async {
+    try {
+      final prefs = await SharedPreferences.getInstance();
+      final configurations = await loadSavedConfigurations();
+      final id = configuration['id'];
+
+      configurations.removeWhere((item) => item['id'] == id);
+      configurations.insert(0, configuration);
+
+      await prefs.setString(
+        _savedConfigurationsKey,
+        jsonEncode(configurations),
+      );
+    } catch (e) {
+      // Handle error silently for production
+    }
+  }
+
+  static Future<void> deleteConfiguration(String configurationId) async {
+    try {
+      final prefs = await SharedPreferences.getInstance();
+      final configurations = await loadSavedConfigurations();
+      configurations.removeWhere((item) => item['id'] == configurationId);
+      await prefs.setString(
+        _savedConfigurationsKey,
+        jsonEncode(configurations),
+      );
+    } catch (e) {
+      // Handle error silently for production
+    }
+  }
+
+  static Future<void> saveLastConfiguration(
+    Map<String, dynamic> configuration,
+  ) async {
+    try {
+      final prefs = await SharedPreferences.getInstance();
+      await prefs.setString(_lastConfigurationKey, jsonEncode(configuration));
+    } catch (e) {
+      // Handle error silently for production
+    }
+  }
+
+  static Future<Map<String, dynamic>?> loadLastConfiguration() async {
+    try {
+      final prefs = await SharedPreferences.getInstance();
+      final jsonString = prefs.getString(_lastConfigurationKey);
+      if (jsonString != null) {
+        return jsonDecode(jsonString) as Map<String, dynamic>;
+      }
+    } catch (e) {
+      // Handle error silently for production
+    }
+    return null;
+  }
+
   // Clear all stored data
   static Future<void> clearAllData() async {
     try {
       final prefs = await SharedPreferences.getInstance();
       await prefs.remove(_nutritionDataKey);
       await prefs.remove(_sportSettingsKey);
+      await prefs.remove(_savedConfigurationsKey);
+      await prefs.remove(_lastConfigurationKey);
     } catch (e) {
       // Handle error silently for production
     }
