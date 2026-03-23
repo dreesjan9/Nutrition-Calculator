@@ -360,117 +360,120 @@ class SingleSportNutritionCalculatorState
 
   void importConfiguration(Map<String, dynamic> configuration) {
     _isApplyingConfiguration = true;
-    setState(() {
-      _configurationId =
-          configuration['id']?.toString() ??
-          DateTime.now().microsecondsSinceEpoch.toString();
-      configurationNameController.text =
-          configuration['name']?.toString() ??
-          _defaultConfigurationName(DateTime.now());
-      currentView = CalculatorView.values.firstWhere(
-        (view) => view.name == configuration['currentView'],
-        orElse: () => CalculatorView.input,
-      );
-      durationController.text = configuration['duration']?.toString() ?? '';
-      distanceController.text = configuration['distance']?.toString() ?? '';
-      drinkingIntervalController.text =
-          configuration['drinkingInterval']?.toString() ?? '15';
-      carbTargetController.text =
-          configuration['carbTarget']?.toString() ?? widget.defaultCarbsPerHour;
-      sodiumTargetController.text =
-          configuration['sodiumTarget']?.toString() ??
-          widget.defaultSodiumPerHour;
-      fluidTargetController.text =
-          configuration['fluidTarget']?.toString() ??
-          widget.defaultFluidPerHour;
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (!mounted) return;
+      setState(() {
+        _configurationId =
+            configuration['id']?.toString() ??
+            DateTime.now().microsecondsSinceEpoch.toString();
+        configurationNameController.text =
+            configuration['name']?.toString() ??
+            _defaultConfigurationName(DateTime.now());
+        currentView = CalculatorView.values.firstWhere(
+          (view) => view.name == configuration['currentView'],
+          orElse: () => CalculatorView.input,
+        );
+        durationController.text = configuration['duration']?.toString() ?? '';
+        distanceController.text = configuration['distance']?.toString() ?? '';
+        drinkingIntervalController.text =
+            configuration['drinkingInterval']?.toString() ?? '15';
+        carbTargetController.text =
+            configuration['carbTarget']?.toString() ?? widget.defaultCarbsPerHour;
+        sodiumTargetController.text =
+            configuration['sodiumTarget']?.toString() ??
+            widget.defaultSodiumPerHour;
+        fluidTargetController.text =
+            configuration['fluidTarget']?.toString() ??
+            widget.defaultFluidPerHour;
 
-      defaultSweatRate = SweatRate.values.firstWhere(
-        (e) => e.name == configuration['defaultSweatRate'],
-        orElse: () => SweatRate.medium,
-      );
-      defaultFluidRate = FluidRate.values.firstWhere(
-        (e) => e.name == configuration['defaultFluidRate'],
-        orElse: () => FluidRate.medium,
-      );
+        defaultSweatRate = SweatRate.values.firstWhere(
+          (e) => e.name == configuration['defaultSweatRate'],
+          orElse: () => SweatRate.medium,
+        );
+        defaultFluidRate = FluidRate.values.firstWhere(
+          (e) => e.name == configuration['defaultFluidRate'],
+          orElse: () => FluidRate.medium,
+        );
 
-      preRaceCarbTargetController.text =
-          configuration['preRaceCarbTarget']?.toString() ?? '0';
-      preRaceSodiumTargetController.text =
-          configuration['preRaceSodiumTarget']?.toString() ?? '0';
-      preRaceFluidTargetController.text =
-          configuration['preRaceFluidTarget']?.toString() ?? '0';
+        preRaceCarbTargetController.text =
+            configuration['preRaceCarbTarget']?.toString() ?? '0';
+        preRaceSodiumTargetController.text =
+            configuration['preRaceSodiumTarget']?.toString() ?? '0';
+        preRaceFluidTargetController.text =
+            configuration['preRaceFluidTarget']?.toString() ?? '0';
 
-      preRaceNutritionItems.clear();
-      final preRaceItems = configuration['preRaceNutritionItems'];
-      if (preRaceItems is List) {
-        for (final item in preRaceItems) {
-          if (item is! Map) {
-            continue;
+        preRaceNutritionItems.clear();
+        final preRaceItems = configuration['preRaceNutritionItems'];
+        if (preRaceItems is List) {
+          for (final item in preRaceItems) {
+            if (item is! Map) {
+              continue;
+            }
+            preRaceNutritionItems.add(
+              NutritionItem(
+                id:
+                    item['id']?.toString() ??
+                    DateTime.now().microsecondsSinceEpoch.toString(),
+                type: NutritionType.values.firstWhere(
+                  (type) => type.name == item['type'],
+                  orElse: () => NutritionType.gel,
+                ),
+                gelCarbs: _singleSportGelCarbsFromStorage(
+                  item['gelCarbs']?.toString(),
+                ),
+                barCarbs: _singleSportBarCarbsFromStorage(
+                  item['barCarbs']?.toString(),
+                ),
+                bottleVolume: (item['bottleVolume'] as num?)?.toDouble(),
+                bottleCarbs: (item['bottleCarbs'] as num?)?.toDouble(),
+                bottleSodium: (item['bottleSodium'] as num?)?.toDouble(),
+                customSodium: (item['customSodium'] as num?)?.toDouble(),
+                caffeine: (item['caffeine'] as num?)?.toDouble(),
+                customName: item['customName']?.toString(),
+                customCarbs: (item['customCarbs'] as num?)?.toDouble(),
+                customFluid: (item['customFluid'] as num?)?.toDouble(),
+              ),
+            );
           }
-          preRaceNutritionItems.add(
-            NutritionItem(
-              id:
-                  item['id']?.toString() ??
-                  DateTime.now().microsecondsSinceEpoch.toString(),
-              type: NutritionType.values.firstWhere(
-                (type) => type.name == item['type'],
-                orElse: () => NutritionType.gel,
-              ),
-              gelCarbs: _singleSportGelCarbsFromStorage(
-                item['gelCarbs']?.toString(),
-              ),
-              barCarbs: _singleSportBarCarbsFromStorage(
-                item['barCarbs']?.toString(),
-              ),
-              bottleVolume: (item['bottleVolume'] as num?)?.toDouble(),
-              bottleCarbs: (item['bottleCarbs'] as num?)?.toDouble(),
-              bottleSodium: (item['bottleSodium'] as num?)?.toDouble(),
-              customSodium: (item['customSodium'] as num?)?.toDouble(),
-              caffeine: (item['caffeine'] as num?)?.toDouble(),
-              customName: item['customName']?.toString(),
-              customCarbs: (item['customCarbs'] as num?)?.toDouble(),
-              customFluid: (item['customFluid'] as num?)?.toDouble(),
-            ),
-          );
         }
-      }
 
-      nutritionItems.clear();
-      final items = configuration['nutritionItems'];
-      if (items is List) {
-        for (final item in items) {
-          if (item is! Map) {
-            continue;
+        nutritionItems.clear();
+        final items = configuration['nutritionItems'];
+        if (items is List) {
+          for (final item in items) {
+            if (item is! Map) {
+              continue;
+            }
+            nutritionItems.add(
+              NutritionItem(
+                id:
+                    item['id']?.toString() ??
+                    DateTime.now().microsecondsSinceEpoch.toString(),
+                type: NutritionType.values.firstWhere(
+                  (type) => type.name == item['type'],
+                  orElse: () => NutritionType.gel,
+                ),
+                gelCarbs: _singleSportGelCarbsFromStorage(
+                  item['gelCarbs']?.toString(),
+                ),
+                barCarbs: _singleSportBarCarbsFromStorage(
+                  item['barCarbs']?.toString(),
+                ),
+                bottleVolume: (item['bottleVolume'] as num?)?.toDouble(),
+                bottleCarbs: (item['bottleCarbs'] as num?)?.toDouble(),
+                bottleSodium: (item['bottleSodium'] as num?)?.toDouble(),
+                customSodium: (item['customSodium'] as num?)?.toDouble(),
+                caffeine: (item['caffeine'] as num?)?.toDouble(),
+                customName: item['customName']?.toString(),
+                customCarbs: (item['customCarbs'] as num?)?.toDouble(),
+                customFluid: (item['customFluid'] as num?)?.toDouble(),
+              ),
+            );
           }
-          nutritionItems.add(
-            NutritionItem(
-              id:
-                  item['id']?.toString() ??
-                  DateTime.now().microsecondsSinceEpoch.toString(),
-              type: NutritionType.values.firstWhere(
-                (type) => type.name == item['type'],
-                orElse: () => NutritionType.gel,
-              ),
-              gelCarbs: _singleSportGelCarbsFromStorage(
-                item['gelCarbs']?.toString(),
-              ),
-              barCarbs: _singleSportBarCarbsFromStorage(
-                item['barCarbs']?.toString(),
-              ),
-              bottleVolume: (item['bottleVolume'] as num?)?.toDouble(),
-              bottleCarbs: (item['bottleCarbs'] as num?)?.toDouble(),
-              bottleSodium: (item['bottleSodium'] as num?)?.toDouble(),
-              customSodium: (item['customSodium'] as num?)?.toDouble(),
-              caffeine: (item['caffeine'] as num?)?.toDouble(),
-              customName: item['customName']?.toString(),
-              customCarbs: (item['customCarbs'] as num?)?.toDouble(),
-              customFluid: (item['customFluid'] as num?)?.toDouble(),
-            ),
-          );
         }
-      }
+      });
+      _isApplyingConfiguration = false;
     });
-    _isApplyingConfiguration = false;
   }
 
   void _scheduleAutoSave() {

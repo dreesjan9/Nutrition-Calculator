@@ -58,47 +58,61 @@ class StorageService {
     return null;
   }
 
+  // Load saved configurations
   static Future<List<Map<String, dynamic>>> loadSavedConfigurations() async {
     try {
+      debugPrint('StorageService: Loading saved configurations...');
       final prefs = await SharedPreferences.getInstance();
       final jsonString = prefs.getString(_savedConfigurationsKey);
       if (jsonString == null) {
+        debugPrint('StorageService: No configurations found.');
         return [];
       }
 
       final decoded = jsonDecode(jsonString);
       if (decoded is! List) {
+        debugPrint('StorageService: Corrupted data format (not a list).');
         return [];
       }
 
-      return decoded
+      final list = decoded
           .whereType<Map>()
           .map(
             (item) => item.map((key, value) => MapEntry(key.toString(), value)),
           )
           .toList();
-    } catch (e) {
+      debugPrint('StorageService: Loaded ${list.length} configurations.');
+      return list;
+    } catch (e, stack) {
+      debugPrint('StorageService Error loading configurations: $e');
+      debugPrint('Stack trace: $stack');
       return [];
     }
   }
 
+  // Save configuration
   static Future<void> saveConfiguration(
     Map<String, dynamic> configuration,
   ) async {
     try {
+      debugPrint('StorageService: Saving configuration...');
       final prefs = await SharedPreferences.getInstance();
       final configurations = await loadSavedConfigurations();
       final id = configuration['id'];
 
+      if (id == null) {
+        debugPrint('StorageService Warning: Saving configuration without ID.');
+      }
+
       configurations.removeWhere((item) => item['id'] == id);
       configurations.insert(0, configuration);
 
-      await prefs.setString(
-        _savedConfigurationsKey,
-        jsonEncode(configurations),
-      );
-    } catch (e) {
-      // Handle error silently for production
+      final jsonString = jsonEncode(configurations);
+      await prefs.setString(_savedConfigurationsKey, jsonString);
+      debugPrint('StorageService: Configuration saved successfully.');
+    } catch (e, stack) {
+      debugPrint('StorageService Error saving configuration: $e');
+      debugPrint('Stack trace: $stack');
     }
   }
 

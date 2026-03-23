@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:nutrition_calculator_app/app/nutrition_calc/presentation/widgets/single_sport_nutrition_calculator.dart';
 import 'package:nutrition_calculator_app/app/nutrition_calc/presentation/widgets/triathlon_nutrition_calculator.dart';
@@ -76,9 +77,12 @@ class _NutritionCalculatorState extends State<NutritionCalculator> {
       return;
     }
 
-    setState(() {
-      _savedConfigurations = configurations;
-      _isLoadingConfigurations = false;
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (!mounted) return;
+      setState(() {
+        _savedConfigurations = configurations;
+        _isLoadingConfigurations = false;
+      });
     });
   }
 
@@ -556,7 +560,7 @@ class _NutritionCalculatorState extends State<NutritionCalculator> {
           isGerman: isGerman,
           restoreLastConfiguration: false,
           onConfigurationChanged: (configuration) {
-            _handleAutoSavedConfiguration(configuration);
+            unawaited(_handleAutoSavedConfiguration(configuration));
           },
         );
       case CalculatorMode.cycling:
@@ -568,7 +572,7 @@ class _NutritionCalculatorState extends State<NutritionCalculator> {
           defaultCarbsPerHour: '80',
           defaultSodiumPerHour: '750',
           defaultFluidPerHour: '700',
-          onConfigurationChanged: _handleAutoSavedConfiguration,
+          onConfigurationChanged: (config) => unawaited(_handleAutoSavedConfiguration(config)),
         );
       case CalculatorMode.running:
         return SingleSportNutritionCalculator(
@@ -579,7 +583,7 @@ class _NutritionCalculatorState extends State<NutritionCalculator> {
           defaultCarbsPerHour: '60',
           defaultSodiumPerHour: '600',
           defaultFluidPerHour: '500',
-          onConfigurationChanged: _handleAutoSavedConfiguration,
+          onConfigurationChanged: (config) => unawaited(_handleAutoSavedConfiguration(config)),
         );
     }
   }

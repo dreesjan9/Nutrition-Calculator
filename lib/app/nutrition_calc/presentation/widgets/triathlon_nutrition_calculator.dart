@@ -246,100 +246,103 @@ class TriathlonNutritionCalculatorState
 
   void importConfiguration(Map<String, dynamic> configuration) {
     _isApplyingConfiguration = true;
-    setState(() {
-      _configurationId =
-          configuration['id']?.toString() ??
-          DateTime.now().microsecondsSinceEpoch.toString();
-      configurationNameController.text =
-          configuration['name']?.toString() ??
-          _defaultConfigurationName(DateTime.now());
-      selectedEventDistance = _eventDistanceFromStorageValue(
-        configuration['selectedEventDistance']?.toString(),
-      );
-      defaultSweatRate = _sweatRateFromStorageValue(
-        configuration['defaultSweatRate']?.toString(),
-      );
-      defaultFluidRate = _fluidRateFromStorageValue(
-        configuration['defaultFluidRate']?.toString(),
-      );
-      drinkingIntervalController.text =
-          configuration['drinkingInterval']?.toString() ?? '10';
-      sipVolumeController.text = configuration['sipVolume']?.toString() ?? '22';
-      emailController.text = configuration['email']?.toString() ?? '';
-      applyDefaultRatesToAllSports();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (!mounted) return;
+      setState(() {
+        _configurationId =
+            configuration['id']?.toString() ??
+            DateTime.now().microsecondsSinceEpoch.toString();
+        configurationNameController.text =
+            configuration['name']?.toString() ??
+            _defaultConfigurationName(DateTime.now());
+        selectedEventDistance = _eventDistanceFromStorageValue(
+          configuration['selectedEventDistance']?.toString(),
+        );
+        defaultSweatRate = _sweatRateFromStorageValue(
+          configuration['defaultSweatRate']?.toString(),
+        );
+        defaultFluidRate = _fluidRateFromStorageValue(
+          configuration['defaultFluidRate']?.toString(),
+        );
+        drinkingIntervalController.text =
+            configuration['drinkingInterval']?.toString() ?? '10';
+        sipVolumeController.text = configuration['sipVolume']?.toString() ?? '22';
+        emailController.text = configuration['email']?.toString() ?? '';
+        applyDefaultRatesToAllSports();
 
-      final sportsData = configuration['sports'];
-      final byName = <String, Map<String, dynamic>>{};
-      if (sportsData is List) {
-        for (final item in sportsData) {
-          if (item is Map) {
-            final mapped = item.map(
-              (key, value) => MapEntry(key.toString(), value),
-            );
-            final sportName = mapped['sportName']?.toString();
-            if (sportName != null) {
-              byName[sportName] = mapped;
+        final sportsData = configuration['sports'];
+        final byName = <String, Map<String, dynamic>>{};
+        if (sportsData is List) {
+          for (final item in sportsData) {
+            if (item is Map) {
+              final mapped = item.map(
+                (key, value) => MapEntry(key.toString(), value),
+              );
+              final sportName = mapped['sportName']?.toString();
+              if (sportName != null) {
+                byName[sportName] = mapped;
+              }
             }
           }
         }
-      }
 
-      for (final sport in sports) {
-        final sportData = byName[sport.sportName];
-        sport.distanceController.text =
-            sportData?['distance']?.toString() ?? '';
-        sport.durationController.text =
-            sportData?['duration']?.toString() ?? '';
-        sport.carbTargetController.text =
-            sportData?['carbTarget']?.toString() ?? '';
-        sport.sodiumTargetController.text =
-            sportData?['sodiumTarget']?.toString() ?? '';
-        sport.fluidTargetController.text =
-            sportData?['fluidTarget']?.toString() ?? '';
+        for (final sport in sports) {
+          final sportData = byName[sport.sportName];
+          sport.distanceController.text =
+              sportData?['distance']?.toString() ?? '';
+          sport.durationController.text =
+              sportData?['duration']?.toString() ?? '';
+          sport.carbTargetController.text =
+              sportData?['carbTarget']?.toString() ?? '';
+          sport.sodiumTargetController.text =
+              sportData?['sodiumTarget']?.toString() ?? '';
+          sport.fluidTargetController.text =
+              sportData?['fluidTarget']?.toString() ?? '';
 
-        final items = <NutritionItem>[];
-        final nutritionItems = sportData?['nutritionItems'];
-        if (nutritionItems is List) {
-          for (final item in nutritionItems) {
-            if (item is! Map) {
-              continue;
+          final items = <NutritionItem>[];
+          final nutritionItems = sportData?['nutritionItems'];
+          if (nutritionItems is List) {
+            for (final item in nutritionItems) {
+              if (item is! Map) {
+                continue;
+              }
+              final mapped = item.map(
+                (key, value) => MapEntry(key.toString(), value),
+              );
+              items.add(
+                NutritionItem(
+                  id:
+                      mapped['id']?.toString() ??
+                      DateTime.now().microsecondsSinceEpoch.toString(),
+                  type: _nutritionTypeFromStorageValue(
+                    mapped['type']?.toString() ?? NutritionType.gel.storageValue,
+                  ),
+                  gelCarbs: _gelCarbsFromStorageValue(
+                    mapped['gelCarbs']?.toString(),
+                  ),
+                  barCarbs: _barCarbsFromStorageValue(
+                    mapped['barCarbs']?.toString(),
+                  ),
+                  bottleVolume: (mapped['bottleVolume'] as num?)?.toDouble(),
+                  bottleCarbs: (mapped['bottleCarbs'] as num?)?.toDouble(),
+                  bottleSodium: (mapped['bottleSodium'] as num?)?.toDouble(),
+                  customSodium: (mapped['customSodium'] as num?)?.toDouble(),
+                  caffeine: (mapped['caffeine'] as num?)?.toDouble(),
+                  customName: mapped['customName']?.toString(),
+                  customCarbs: (mapped['customCarbs'] as num?)?.toDouble(),
+                  customFluid: (mapped['customFluid'] as num?)?.toDouble(),
+                ),
+              );
             }
-            final mapped = item.map(
-              (key, value) => MapEntry(key.toString(), value),
-            );
-            items.add(
-              NutritionItem(
-                id:
-                    mapped['id']?.toString() ??
-                    DateTime.now().microsecondsSinceEpoch.toString(),
-                type: _nutritionTypeFromStorageValue(
-                  mapped['type']?.toString() ?? NutritionType.gel.storageValue,
-                ),
-                gelCarbs: _gelCarbsFromStorageValue(
-                  mapped['gelCarbs']?.toString(),
-                ),
-                barCarbs: _barCarbsFromStorageValue(
-                  mapped['barCarbs']?.toString(),
-                ),
-                bottleVolume: (mapped['bottleVolume'] as num?)?.toDouble(),
-                bottleCarbs: (mapped['bottleCarbs'] as num?)?.toDouble(),
-                bottleSodium: (mapped['bottleSodium'] as num?)?.toDouble(),
-                customSodium: (mapped['customSodium'] as num?)?.toDouble(),
-                caffeine: (mapped['caffeine'] as num?)?.toDouble(),
-                customName: mapped['customName']?.toString(),
-                customCarbs: (mapped['customCarbs'] as num?)?.toDouble(),
-                customFluid: (mapped['customFluid'] as num?)?.toDouble(),
-              ),
-            );
           }
-        }
 
-        sport.nutritionItems
-          ..clear()
-          ..addAll(items);
-      }
+          sport.nutritionItems
+            ..clear()
+            ..addAll(items);
+        }
+      });
+      _isApplyingConfiguration = false;
     });
-    _isApplyingConfiguration = false;
   }
 
   String get _effectiveConfigurationName {
