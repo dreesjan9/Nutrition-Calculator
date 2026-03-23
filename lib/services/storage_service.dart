@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'package:flutter/foundation.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class StorageService {
@@ -137,6 +138,26 @@ class StorageService {
       // Handle error silently for production
     }
     return null;
+  }
+
+  static const String _crashCheckKey = 'crash_check';
+
+  static Future<void> checkSafetyMode() async {
+    try {
+      final prefs = await SharedPreferences.getInstance();
+      final lastCheck = prefs.getInt(_crashCheckKey) ?? 0;
+      final now = DateTime.now().millisecondsSinceEpoch;
+      
+      // If the app crashed within 5 seconds of the last start
+      if (now - lastCheck < 5000) {
+        debugPrint('CRASH LOOP DETECTED: Clearing all local data for safety.');
+        await clearAllData();
+      }
+      
+      await prefs.setInt(_crashCheckKey, now);
+    } catch (e) {
+      // Ignore errors in safety check
+    }
   }
 
   // Clear all stored data

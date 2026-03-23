@@ -173,34 +173,31 @@ class _NutritionCalculatorState extends State<NutritionCalculator> {
     final mode = _calculatorModeFromStorage(configuration['mode']?.toString());
     final data = configuration['data'];
 
-    setState(() {
-      _selectedMode = mode;
-      _currentConfigurationName = configuration['name']?.toString();
-      _isInEditor = true;
-    });
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (!mounted) return;
+      setState(() {
+        _selectedMode = mode;
+        _currentConfigurationName = configuration['name']?.toString();
+        _isInEditor = true;
+      });
 
-    if (mode == CalculatorMode.triathlon && data is Map) {
-      final mappedData = data.map(
-        (key, value) => MapEntry(key.toString(), value),
-      );
-      WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (mode == CalculatorMode.triathlon && data is Map) {
+        final mappedData = data.map(
+          (key, value) => MapEntry(key.toString(), value),
+        );
         _triathlonCalculatorKey.currentState?.importConfiguration(mappedData);
-      });
-    } else if (mode == CalculatorMode.cycling && data is Map) {
-      final mappedData = data.map(
-        (key, value) => MapEntry(key.toString(), value),
-      );
-      WidgetsBinding.instance.addPostFrameCallback((_) {
+      } else if (mode == CalculatorMode.cycling && data is Map) {
+        final mappedData = data.map(
+          (key, value) => MapEntry(key.toString(), value),
+        );
         _cyclingCalculatorKey.currentState?.importConfiguration(mappedData);
-      });
-    } else if (mode == CalculatorMode.running && data is Map) {
-      final mappedData = data.map(
-        (key, value) => MapEntry(key.toString(), value),
-      );
-      WidgetsBinding.instance.addPostFrameCallback((_) {
+      } else if (mode == CalculatorMode.running && data is Map) {
+        final mappedData = data.map(
+          (key, value) => MapEntry(key.toString(), value),
+        );
         _runningCalculatorKey.currentState?.importConfiguration(mappedData);
-      });
-    }
+      }
+    });
   }
 
   Future<void> _deleteConfiguration(Map<String, dynamic> configuration) async {
@@ -286,11 +283,14 @@ class _NutritionCalculatorState extends State<NutritionCalculator> {
       return;
     }
 
-    setState(() {
-      _currentConfigurationName = entry['name']?.toString();
-      _savedConfigurations.removeWhere((item) => item['id'] == entry['id']);
-      _savedConfigurations.insert(0, entry);
-      _isLoadingConfigurations = false;
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (!mounted) return;
+      setState(() {
+        _currentConfigurationName = entry['name']?.toString();
+        _savedConfigurations.removeWhere((item) => item['id'] == entry['id']);
+        _savedConfigurations.insert(0, entry);
+        _isLoadingConfigurations = false;
+      });
     });
   }
 
@@ -835,59 +835,42 @@ class _NutritionCalculatorState extends State<NutritionCalculator> {
               decoration: const BoxDecoration(
                 border: Border(top: BorderSide(color: Colors.white12, width: 1)),
               ),
-              child: SizedBox(
-                height: 80, // Increased height
-                child: BottomNavigationBar(
-                  currentIndex: _selectedIndex,
-                  onTap: (index) {
-                    setState(() {
-                      _selectedIndex = index;
-                    });
-                  },
-                  backgroundColor: const Color(0xFF1A1A1A),
-                  selectedItemColor: blackyellowTheme.colorScheme.primary,
-                  unselectedItemColor: Colors.white,
-                  showSelectedLabels: true,
-                  showUnselectedLabels: true,
-                  iconSize: 28,
-                  selectedIconTheme: IconThemeData(
-                    color: blackyellowTheme.colorScheme.primary,
-                    size: 28,
-                    opacity: 1.0,
-                  ),
-                  unselectedIconTheme: IconThemeData(
-                    color: Colors.white.withOpacity(0.6),
-                    size: 28,
-                    opacity: 0.6,
-                  ),
-                  selectedLabelStyle: const TextStyle(
-                      fontWeight: FontWeight.bold, fontSize: 13), // Slightly larger font
-                  unselectedLabelStyle: const TextStyle(fontSize: 13),
-                  type: BottomNavigationBarType.fixed,
-                  items: [
-                    BottomNavigationBarItem(
-                      icon: const Padding(
-                        padding: EdgeInsets.only(bottom: 4),
-                        child: Icon(Icons.dashboard_outlined),
-                      ),
-                      activeIcon: const Padding(
-                        padding: EdgeInsets.only(bottom: 4),
-                        child: Icon(Icons.dashboard),
-                      ),
-                      label: isGerman ? 'Dashboard' : 'Dashboard',
+              child: SafeArea(
+                child: Material(
+                  color: const Color(0xFF1A1A1A),
+                  child: BottomNavigationBar(
+                    currentIndex: _selectedIndex,
+                    onTap: (index) {
+                      setState(() {
+                        _selectedIndex = index;
+                      });
+                    },
+                    backgroundColor: const Color(0xFF1A1A1A),
+                    elevation: 0,
+                    selectedItemColor: blackyellowTheme.colorScheme.primary,
+                    unselectedItemColor: Colors.white.withOpacity(0.6),
+                    showSelectedLabels: true,
+                    showUnselectedLabels: true,
+                    iconSize: 24,
+                    selectedLabelStyle: const TextStyle(
+                      fontWeight: FontWeight.bold,
+                      fontSize: 12,
                     ),
-                    BottomNavigationBarItem(
-                      icon: const Padding(
-                        padding: EdgeInsets.only(bottom: 4),
-                        child: Icon(Icons.menu_book_outlined),
+                    unselectedLabelStyle: const TextStyle(fontSize: 12),
+                    type: BottomNavigationBarType.fixed,
+                    items: [
+                      BottomNavigationBarItem(
+                        icon: const Icon(Icons.dashboard_outlined),
+                        activeIcon: const Icon(Icons.dashboard),
+                        label: isGerman ? 'Dashboard' : 'Dashboard',
                       ),
-                      activeIcon: const Padding(
-                        padding: EdgeInsets.only(bottom: 4),
-                        child: Icon(Icons.menu_book),
+                      BottomNavigationBarItem(
+                        icon: const Icon(Icons.menu_book_outlined),
+                        activeIcon: const Icon(Icons.menu_book),
+                        label: isGerman ? 'Wissen' : 'Knowledge',
                       ),
-                      label: isGerman ? 'Wissen' : 'Knowledge',
-                    ),
-                  ],
+                    ],
+                  ),
                 ),
               ),
             ),

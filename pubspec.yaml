@@ -67,6 +67,14 @@ flutter:
     - assets/images/logo-text.png
     - assets/images/Malto.png
     - assets/images/fruchtzucker.png
+    - assets/icons/bar-chocolate-svgrepo-com.svg
+    - assets/icons/bottle-svgrepo-com-2.svg
+    - assets/icons/bottle-svgrepo-com.svg
+    - assets/icons/coffee-bean-roast-brew-svgrepo-com.svg
+    - assets/icons/distance-svgrepo-com.svg
+    - assets/icons/energy-bottle-svgrepo-com.svg
+    - assets/icons/salt-and-pepper-svgrepo-com.svg
+    - assets/icons/sugar-svgrepo-com.svg
     # Web icons (for PWA)
     - web/icons/Icon-192.png
     - web/icons/Icon-512.png
